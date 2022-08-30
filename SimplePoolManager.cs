@@ -6,6 +6,7 @@ public class SimplePoolManager : MonoBehaviour {
     // 仅有List容器和非静态时, 才能出现在unity的编辑窗口中
     public List<GameObject> spawnPrefabConfig;
     public List<int> spawnQuantityConfig;
+    
     private static Dictionary<string, SpawnPool> spawnPoolContainer = new Dictionary<string, SpawnPool>();
 
     void Start() {
@@ -14,6 +15,7 @@ public class SimplePoolManager : MonoBehaviour {
 
     private void Init() {
         SpawnPool newPool;
+
         for (int i = 0; i < spawnPrefabConfig.Count; i++) {
             newPool = new SpawnPool(spawnPrefabConfig[i], spawnQuantityConfig[i]);
             // Instantiate创建的对象名称具有(Clone)后缀
@@ -23,25 +25,13 @@ public class SimplePoolManager : MonoBehaviour {
         }
     }
 
-    public static GameObject GetGameObj(GameObject go) {
+    public static SpawnPool GrantSpawnPool(GameObject go) {
         SpawnPool sp;
 
         if (spawnPoolContainer.TryGetValue(go.tag, out sp)) {
-            return sp.GetGo();
+            return sp;
         }
         else {
-            throw new KeyNotFoundException("In all spawnPool, key " + go.tag + " isn't exist!");
+            throw new KeyNotFoundException("SpawnPool which contain prefab with the tag \"" + go.tag + "\" isn't exist!");
         }
     }
-
-    public static void SleepGameObj(GameObject go) {
-        SpawnPool sp;
-
-        if (spawnPoolContainer.TryGetValue(go.tag, out sp)) {
-            sp.SleepGo(go);
-        }
-        else {
-            throw new KeyNotFoundException("In all spawnPool, key " + go.tag + " isn't exist!");
-        }
-    }
-}

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnPool{
+
+    private int instantiateQuantity = 3;
+
     private GameObject prefab;
     private List<GameObject> activeGos = new List<GameObject>();
     private List<GameObject> sleepGos = new List<GameObject>();
@@ -27,28 +30,38 @@ public class SpawnPool{
     }
 
     public GameObject GetGo() {
-        GameObject go;
+        GameObject go = null;
 
         if (sleepGos.Count > 0) {
-            // »ñÈ¡³ÁË¯¶ÔÏó³ØÖĞ×îºóÒ»¸ö¶ÔÏó
+            // è·å–æ²‰ç¡å¯¹è±¡æ± ä¸­æœ€åä¸€ä¸ªå¯¹è±¡
             go = sleepGos[sleepGos.Count - 1];
-            // ½«×îºóÒ»¸ö³ÁË¯µÄ¶ÔÏó×ªÈë»îÔ¾¶ÔÏó³ØÖĞ
+            // å°†æœ€åä¸€ä¸ªæ²‰ç¡çš„å¯¹è±¡è½¬å…¥æ´»è·ƒå¯¹è±¡æ± ä¸­
             activeGos.Add(go);
-            // ½«¸Ã¶ÔÏó´Ó³ÁË¯³ØÖĞÒÆ³ı
+            // å°†è¯¥å¯¹è±¡ä»æ²‰ç¡æ± ä¸­ç§»é™¤
             sleepGos.Remove(go);
             go.SetActive(true);
-            return go;
         }
-        else {
-            go = Object.Instantiate(prefab);
-            activeGos.Add(go);
-            return go;
-        }
+
+        ExtendPreGo();
+
+        return go;
     }
 
     public void SleepGo(GameObject go) {
+        go.SetActive(false);
         activeGos.Remove(go);
         sleepGos.Add(go);
-        go.SetActive(false);
+    }
+
+    // å¦‚æœä¸€ä¸ªæ²‰ç¡æ± ä¸­æ²¡æœ‰å¯¹è±¡äº†, é‚£ä¹ˆä»–ä¼šå‡†å¤‡å¥½å¤šä¸ªæ–°å¾—å¯¹è±¡, è€Œéåªè°ƒç”¨ä¸€æ¬¡instantiate
+    private void ExtendPreGo() {
+        if (sleepGos.Count < 1) {
+            GameObject go;
+            for (int i = 0; i < instantiateQuantity; i++) {
+                go = Object.Instantiate(prefab);
+                go.SetActive(false);
+                sleepGos.Add(go);
+            }
+        }
     }
 }
