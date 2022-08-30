@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class SpawnPool{
 
+    public delegate void emptyHandler();
+    public event emptyHandler activePoolEmptyEvent;
+
     private int instantiateQuantity = 3;
 
     private GameObject prefab;
@@ -51,6 +54,14 @@ public class SpawnPool{
         go.SetActive(false);
         activeGos.Remove(go);
         sleepGos.Add(go);
+
+        if (isActivePoolEmpty()) {
+            activePoolEmptyEvent?.Invoke();
+        }
+    }
+
+    public bool isActivePoolEmpty() {
+        return activeGos.Count == 0;
     }
 
     // 如果一个沉睡池中没有对象了, 那么他会准备好多个新得对象, 而非只调用一次instantiate
@@ -65,3 +76,8 @@ public class SpawnPool{
         }
     }
 }
+
+/*
+  人麻了, 事件原来即使是public, 在类外, 也只能使用+=符号
+  我以为, 为了使事件只能被内部类处理, 外部类无法直接调用, 需要使用private修饰符
+ */
